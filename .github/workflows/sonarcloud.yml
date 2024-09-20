@@ -20,7 +20,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2  # Configura Node.js
         with:
-          node-version: '18'  # Puedes cambiar a la versión de Node.js que necesites
+          node-version: '8'  # Puedes cambiar a la versión de Node.js que necesites
 
       - name: Install dependencies
         run: npm install  # Instala las dependencias del proyecto

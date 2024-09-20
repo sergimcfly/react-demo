@@ -46,10 +46,11 @@ jobs:
           SONAR_ORG: ${{ secrets.SONAR_ORG }}  # Clave de tu organización en SonarCloud
         run: |
           sonar-scanner \
-          -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }} \
-          -Dsonar.organization=${{ env.SONAR_ORG }} \
-          -Dsonar.sources=. \
-          -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info  # Si tienes pruebas con cobertura
+            -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }} \
+            -Dsonar.organization=${{ env.SONAR_ORG }} \
+            -Dsonar.host.url=https://sonarcloud.io \  # Agrega la URL de SonarCloud
+            -Dsonar.sources=. \
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
 
       - name: Run tests and generate coverage
         run: |

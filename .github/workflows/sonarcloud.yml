@@ -1,0 +1,56 @@
+name: SonarCloud Analysis
+
+on:
+  push:
+    branches:
+      - master  # Se ejecuta en cada push a la rama principal
+  pull_request:
+    branches:
+      - master  # También se ejecuta en cada PR a la rama principal
+
+jobs:
+  sonarcloud:
+    name: Run SonarCloud Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2  # Paso para obtener el código
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2  # Configura Node.js
+        with:
+          node-version: '18'  # Puedes cambiar a la versión de Node.js que necesites
+
+      - name: Install dependencies
+        run: npm install  # Instala las dependencias del proyecto
+
+      - name: Build project
+        run: npm run build  # Compila el proyecto React
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+
+      - name: Install sonar-scanner
+        run: |
+          npm install -g sonar-scanner
+
+      - name: Run SonarCloud Scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # El token se debe almacenar como secreto en GitHub
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Token de GitHub para integrar los análisis
+          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}  # Clave del proyecto en SonarCloud
+          SONAR_ORG: ${{ secrets.SONAR_ORG }}  # Clave de tu organización en SonarCloud
+        run: |
+          sonar-scanner \
+          -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }} \
+          -Dsonar.organization=${{ env.SONAR_ORG }} \
+          -Dsonar.sources=. \
+          -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info  # Si tienes pruebas con cobertura
+
+      - name: Run tests and generate coverage
+        run: |
+          npm run test -- --coverage  # Ejecuta los tests y genera el reporte de cobertura
